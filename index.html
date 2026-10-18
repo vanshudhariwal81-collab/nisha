@@ -1,122 +1,777 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Heart, Sparkles, Gift, Flame, Music, Volume2, VolumeX, Play, Pause, 
-  RotateCcw, Image, Plus, X, ChevronRight, ChevronLeft, Mic, MicOff,
-  Smile, Star, Flower2, Award, Send, Settings, User, Check, Eye
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy 25th Birthday Sister! 🎂💖</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-// --- Web Audio API Synthetic Music & Sound Generator ---
-class AudioController {
-  constructor() {
-    this.ctx = null;
-    this.isPlaying = false;
-    this.melodyInterval = null;
-  }
+  <style>
+    /* Custom Font Classes */
+    .font-script { font-family: 'Great Vibes', cursive; }
+    .font-hand { font-family: 'Dancing Script', cursive; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-sans { font-family: 'Outfit', sans-serif; }
 
-  init() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    /* Custom Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(3deg); }
     }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.08); }
     }
-  }
-
-  playTone(freq, duration, type = 'sine', gainVal = 0.1) {
-    if (!this.ctx) return;
-    try {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-      gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + duration);
-    } catch (e) {
-      console.error(e);
+    @keyframes candleFlicker {
+      0%, 100% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+      50% { transform: scale(1.15) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 10px #fbbf24); }
     }
-  }
+    @keyframes smokeUp {
+      0% { opacity: 0.8; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-30px) scale(2.5); }
+    }
 
-  playHappyBirthdayTune() {
-    this.init();
-    if (this.isPlaying) return;
-    this.isPlaying = true;
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-float-delayed { animation: float 7s ease-in-out 2s infinite; }
+    .animate-glow { animation: pulseGlow 4s ease-in-out infinite; }
+    .animate-flicker { animation: candleFlicker 0.6s ease-in-out infinite alternate; }
+    .animate-smoke { animation: smokeUp 1.5s ease-out forwards; }
 
-    // Happy Birthday notes frequencies (Hz)
-    const notes = [
-      { f: 261.63, d: 0.4 }, { f: 261.63, d: 0.4 }, { f: 293.66, d: 0.8 }, { f: 261.63, d: 0.8 }, { f: 349.23, d: 0.8 }, { f: 329.63, d: 1.2 },
-      { f: 261.63, d: 0.4 }, { f: 261.63, d: 0.4 }, { f: 293.66, d: 0.8 }, { f: 261.63, d: 0.8 }, { f: 392.00, d: 0.8 }, { f: 349.23, d: 1.2 },
-      { f: 261.63, d: 0.4 }, { f: 261.63, d: 0.4 }, { f: 523.25, d: 0.8 }, { f: 440.00, d: 0.8 }, { f: 349.23, d: 0.8 }, { f: 329.63, d: 0.8 }, { f: 293.66, d: 0.8 },
-      { f: 466.16, d: 0.4 }, { f: 466.16, d: 0.4 }, { f: 440.00, d: 0.8 }, { f: 349.23, d: 0.8 }, { f: 392.00, d: 0.8 }, { f: 349.23, d: 1.4 }
+    /* Glassmorphism Styling */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    .glass-card-dark {
+      background: rgba(255, 240, 245, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(244, 114, 182, 0.3);
+    }
+
+    /* Interactive Flip Card */
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+
+    /* Envelope 3D unfolding */
+    .envelope-wrapper {
+      perspective: 1000px;
+    }
+    .envelope-flap {
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out;
+    }
+    .envelope-open .envelope-flap {
+      transform: rotateX(180deg);
+    }
+    .letter-paper {
+      transition: transform 0.8s ease-in-out, opacity 0.5s ease;
+    }
+    .envelope-open .letter-paper {
+      transform: translateY(-120px) scale(1.02);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #fdf2f8; }
+    ::-webkit-scrollbar-thumb { background: #f472b6; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ec4899; }
+  </style>
+</head>
+<body class="font-sans bg-gradient-to-b from-rose-50 via-purple-50 to-amber-50 text-slate-800 overflow-x-hidden selection:bg-pink-300 selection:text-pink-900 relative">
+
+  <!-- Background Particle & Fireworks Overlay Canvas -->
+  <canvas id="fxCanvas" class="fixed inset-0 pointer-events-none z-30"></canvas>
+
+  <!-- ================= TOP FLOATING BAR & AUDIO CONTROLLER ================= -->
+  <div class="fixed top-4 right-4 z-50 flex items-center gap-3">
+    <!-- Music Toggle Button -->
+    <button id="musicToggleBtn" onclick="toggleMusic()" class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-pink-200 hover:bg-white hover:scale-105 active:scale-95 transition-all text-pink-600 font-medium text-sm group">
+      <i data-lucide="volume-x" id="musicIcon" class="w-4 h-4 text-slate-400 group-hover:text-pink-500"></i>
+      <span id="musicText" class="hidden sm:inline">Play Melody 🎵</span>
+    </button>
+
+    <!-- Customizer Gear Button -->
+    <button onclick="toggleCustomizer()" class="p-2.5 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-rose-200 text-rose-600 hover:bg-rose-50 hover:rotate-45 transition-all active:scale-95" title="Customize Names & Photos">
+      <i data-lucide="settings" class="w-5 h-5"></i>
+    </button>
+  </div>
+
+  <!-- ================= HERO SECTION ================= -->
+  <section class="relative min-h-screen flex flex-col justify-center items-center text-center px-4 overflow-hidden pt-12 pb-16">
+    <!-- Soft Glows -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-pink-200/50 rounded-full blur-3xl pointer-events-none animate-glow"></div>
+    <div class="absolute bottom-1/4 left-1/3 w-80 h-80 bg-purple-200/40 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Animated Floating Emoji & Decor -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute top-12 left-[10%] text-4xl animate-float">🎈</div>
+      <div class="absolute top-1/3 right-[12%] text-5xl animate-float-delayed">🎂</div>
+      <div class="absolute bottom-1/4 left-[8%] text-3xl animate-float">🎁</div>
+      <div class="absolute top-20 right-[25%] text-3xl animate-float-delayed">✨</div>
+      <div class="absolute bottom-12 right-[15%] text-4xl animate-float">🌸</div>
+    </div>
+
+    <!-- Main Hero Box -->
+    <div class="relative z-10 max-w-4xl mx-auto space-y-6">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100/80 border border-rose-200 text-rose-700 text-sm font-medium shadow-sm">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> A Very Special 25th Birthday Celebration
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-serif font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-purple-600 to-amber-600 tracking-tight leading-tight py-2">
+        Happy 25th Birthday, <br />
+        <span class="font-script text-pink-600 font-normal italic drop-shadow-sm displaySisterName">
+          My Dearest Didi! 🎂💖
+        </span>
+      </h1>
+
+      <p class="text-xl sm:text-2xl font-serif text-slate-700 max-w-2xl mx-auto font-light leading-relaxed">
+        “25 Years of Beautiful Memories, Endless Smiles, and a Heart Full of Dreams.”
+      </p>
+
+      <p class="text-base sm:text-lg text-slate-600 max-w-xl mx-auto font-sans leading-relaxed">
+        Today isn't just another birthday. It's a celebration of the wonderful person you are, the happiness you bring into our lives, and all the incredible things waiting for you ahead.
+      </p>
+
+      <div class="pt-6">
+        <button onclick="triggerHeroSurprise()" class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-600 text-white font-semibold text-lg shadow-xl shadow-rose-200 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer">
+          <i data-lucide="gift" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+          Open Your Birthday Surprise ✨
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DIGITAL ENVELOPE & LETTER SECTION ================= -->
+  <section id="letterSection" class="py-20 px-4 max-w-4xl mx-auto relative z-10">
+    <div class="text-center mb-12 space-y-3">
+      <span class="text-sm uppercase tracking-widest text-rose-500 font-semibold">From the Heart</span>
+      <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
+        A Handwritten Letter For You ✉️
+      </h2>
+      <div class="w-16 h-1 bg-gradient-to-r from-pink-400 to-rose-500 mx-auto rounded-full"></div>
+    </div>
+
+    <!-- Glass Card Wrapper -->
+    <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl border border-pink-100 relative overflow-hidden">
+      
+      <!-- Unopened Envelope State -->
+      <div id="envelopeClosed" class="text-center py-12 px-4 space-y-6 flex flex-col items-center">
+        <div class="w-24 h-24 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 shadow-inner animate-bounce">
+          <i data-lucide="heart" class="w-12 h-12 fill-rose-400 text-rose-500"></i>
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-2xl font-serif font-bold text-slate-800">For My Dearest Sister <span class="displaySisterName">Didi</span></h3>
+          <p class="text-slate-500 text-sm">Sealed with unconditional love, warmth & wishes</p>
+        </div>
+        <button onclick="openLetter()" class="px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-400 to-pink-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+          <i data-lucide="mail-open" class="w-4 h-4"></i> Open My Birthday Letter 💌
+        </button>
+      </div>
+
+      <!-- Opened Letter Content -->
+      <div id="envelopeOpened" class="hidden space-y-6 relative transition-all duration-500">
+        <!-- Letter Toolbar -->
+        <div class="flex flex-wrap justify-between items-center border-b border-rose-100 pb-4 gap-3">
+          <div class="flex items-center gap-2 text-rose-600 font-serif font-bold text-lg">
+            <i data-lucide="sparkles" class="w-5 h-5"></i> 25th Birthday Special Edition
+          </div>
+          <div class="flex gap-2">
+            <button onclick="toggleSpeech()" id="speechBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100 transition-colors">
+              <i data-lucide="volume-2" class="w-4 h-4"></i> <span id="speechBtnText">Listen 🎧</span>
+            </button>
+            <button onclick="copyLetterText()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold hover:bg-slate-200 transition-colors">
+              <i data-lucide="copy" class="w-4 h-4"></i> Copy Text
+            </button>
+          </div>
+        </div>
+
+        <!-- Handwritten Letter Parchment Box -->
+        <div class="font-serif text-slate-800 text-base sm:text-lg leading-relaxed space-y-5 bg-amber-50/70 p-6 sm:p-8 rounded-2xl border border-amber-200/60 shadow-inner">
+          <p class="font-semibold text-rose-700 text-xl font-hand text-2xl">
+            My Dearest Sister <span class="displaySisterName">Didi</span>,
+          </p>
+          <p>
+            Happy 25th Birthday to one of the most special people in my life! Today marks 25 beautiful years of your existence, and I hope you know just how precious, wonderful, and loved you truly are. ❤️
+          </p>
+          <p>
+            May this new chapter of your life bring you endless happiness, incredible opportunities, beautiful memories, genuine love, inner peace, and success beyond your imagination.
+          </p>
+          <p>
+            May every dream you've ever held close to your heart slowly turn into reality. May you always find the courage to chase what makes you happy, the strength to overcome every challenge, and countless reasons to smile every single day.
+          </p>
+          <p>
+            Thank you for being the amazing person you are. No matter how much life changes or how many years pass, you'll always hold a special place in my heart.
+          </p>
+          <p>
+            Congratulations on completing 25 wonderful years and beginning another beautiful chapter of your life! I'm wishing you many, many more years filled with good health, laughter, blessings, achievements, and unforgettable moments.
+          </p>
+          <p class="font-semibold text-rose-800">
+            Happy 25th Birthday, <span class="displaySisterName">Didi</span>! 🎂🎉💗
+          </p>
+          <p>
+            Keep smiling, keep shining, keep dreaming, and keep being the incredible person you are.
+          </p>
+          <div class="pt-4 border-t border-rose-200/60 text-right">
+            <p class="italic text-slate-600 text-sm">With lots of love, hugs, and warm wishes,</p>
+            <p class="font-bold text-rose-700 text-2xl font-hand mt-1 displayBrotherName">Your Loving Brother ❤️</p>
+          </div>
+        </div>
+
+        <div class="text-center pt-2">
+          <button onclick="closeLetter()" class="text-xs text-slate-400 hover:text-slate-600 underline">
+            Fold letter back
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= AGE 25 CELEBRATION BADGE ================= -->
+  <section class="py-20 px-4 bg-gradient-to-r from-rose-100/50 via-purple-100/40 to-amber-100/50 relative overflow-hidden">
+    <div class="max-w-5xl mx-auto text-center space-y-12 relative z-10">
+      
+      <div class="space-y-4">
+        <!-- Glowing 3D 25 Badge -->
+        <div class="inline-block relative">
+          <span class="text-8xl sm:text-9xl font-extrabold font-serif text-transparent bg-clip-text bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 drop-shadow-2xl tracking-tighter">
+            25
+          </span>
+          <i data-lucide="sparkles" class="w-10 h-10 text-amber-400 absolute -top-2 -right-4 animate-spin"></i>
+          <i data-lucide="heart" class="w-8 h-8 text-rose-400 absolute -bottom-2 -left-4 fill-rose-300 animate-bounce"></i>
+        </div>
+
+        <h2 class="text-3xl sm:text-5xl font-serif font-bold text-slate-800">
+          Chapter 25: Your Most Beautiful Era Begins Now ✨
+        </h2>
+
+        <p class="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed font-light">
+          May your 25th year be filled with new adventures, unexpected blessings, exciting opportunities, unforgettable memories, and the courage to become everything you've ever dreamed of being.
+        </p>
+      </div>
+
+      <!-- Milestone Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass-card p-6 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-left space-y-3 group">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
+            <i data-lucide="award" class="w-6 h-6"></i>
+          </div>
+          <h3 class="font-serif font-bold text-xl text-slate-800">25 Years</h3>
+          <p class="text-slate-500 text-sm">Of Beautiful Life, Grace & Light</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-left space-y-3 group">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
+            <i data-lucide="smile" class="w-6 h-6"></i>
+          </div>
+          <h3 class="font-serif font-bold text-xl text-slate-800">Countless Reasons</h3>
+          <p class="text-slate-500 text-sm">To Smile & Celebrate Every Single Day</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-left space-y-3 group">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
+            <i data-lucide="star" class="w-6 h-6"></i>
+          </div>
+          <h3 class="font-serif font-bold text-xl text-slate-800">Endless Dreams</h3>
+          <p class="text-slate-500 text-sm">Waiting to Be Chased & Accomplished</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-left space-y-3 group">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
+            <i data-lucide="heart" class="w-6 h-6"></i>
+          </div>
+          <h3 class="font-serif font-bold text-xl text-slate-800">A Million Memories</h3>
+          <p class="text-slate-500 text-sm">Yet to Be Made Together</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= POLAROID PHOTO GALLERY ================= -->
+  <section class="py-20 px-4 max-w-6xl mx-auto relative z-10">
+    <div class="text-center space-y-3 mb-12">
+      <span class="text-sm uppercase tracking-widest text-rose-500 font-semibold">Precious Memories</span>
+      <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
+        Beautiful Memories, Priceless Moments 📸💖
+      </h2>
+      <p class="text-slate-600 max-w-xl mx-auto text-sm sm:text-base">
+        Every picture tells a story, and every memory reminds me how lucky I am to have you as my sister.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+        <label class="px-4 py-2 rounded-full bg-white text-slate-700 border border-slate-200 text-xs font-semibold flex items-center gap-2 cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+          <i data-lucide="plus" class="w-3.5 h-3.5 text-rose-500"></i>
+          Add Custom Photo
+          <input type="file" accept="image/*" onchange="uploadCustomPhoto(event)" class="hidden">
+        </label>
+      </div>
+    </div>
+
+    <!-- Polaroid Grid Container -->
+    <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Dynamic Photo Cards Injected via JS -->
+    </div>
+  </section>
+
+  <!-- Lightbox Modal -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="relative max-w-3xl w-full bg-white p-4 rounded-2xl shadow-2xl space-y-4">
+      <button onclick="closeLightbox()" class="absolute top-4 right-4 p-2 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 z-10">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="relative max-h-[70vh] overflow-hidden rounded-xl bg-black flex items-center justify-center">
+        <img id="lightboxImg" src="" alt="Gallery Image" class="max-h-[70vh] w-auto object-contain">
+        <button onclick="navLightbox(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/70 hover:bg-white text-slate-800 shadow">
+          <i data-lucide="chevron-left" class="w-6 h-6"></i>
+        </button>
+        <button onclick="navLightbox(1)" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/70 hover:bg-white text-slate-800 shadow">
+          <i data-lucide="chevron-right" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <p id="lightboxCaption" class="text-center font-serif italic text-slate-700 text-lg py-2"></p>
+    </div>
+  </div>
+
+  <!-- ================= BIRTHDAY WISHES INTERACTIVE GRID ================= -->
+  <section class="py-20 px-4 max-w-5xl mx-auto relative z-10">
+    <div class="text-center space-y-3 mb-12">
+      <span class="text-sm uppercase tracking-widest text-rose-500 font-semibold">Special Blessings</span>
+      <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
+        Wishes & Blessings For Your Journey 🌟
+      </h2>
+      <p class="text-slate-600 max-w-lg mx-auto text-sm">
+        Hover or tap each card to flip and reveal a heartfelt blessing!
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Card 1 -->
+      <div class="group h-48 perspective-1000 cursor-pointer">
+        <div class="relative w-full h-full duration-500 transform-style-3d group-hover:rotate-y-180">
+          <div class="absolute inset-0 rounded-2xl bg-white border border-pink-100 shadow-md p-6 flex flex-col items-center justify-center gap-3 backface-hidden">
+            <div class="p-3 rounded-full bg-pink-100 text-pink-600"><i data-lucide="heart" class="w-6 h-6"></i></div>
+            <h3 class="font-serif font-bold text-slate-800">Endless Joy</h3>
+            <span class="text-xs text-rose-400">Hover / Tap to flip</span>
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white p-6 flex items-center justify-center text-center font-serif text-sm leading-relaxed rotate-y-180 backface-hidden shadow-lg">
+            "May happiness follow you wherever life takes you, today and forever."
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="group h-48 perspective-1000 cursor-pointer">
+        <div class="relative w-full h-full duration-500 transform-style-3d group-hover:rotate-y-180">
+          <div class="absolute inset-0 rounded-2xl bg-white border border-pink-100 shadow-md p-6 flex flex-col items-center justify-center gap-3 backface-hidden">
+            <div class="p-3 rounded-full bg-amber-100 text-amber-600"><i data-lucide="star" class="w-6 h-6"></i></div>
+            <h3 class="font-serif font-bold text-slate-800">Fulfilled Dreams</h3>
+            <span class="text-xs text-amber-500">Hover / Tap to flip</span>
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white p-6 flex items-center justify-center text-center font-serif text-sm leading-relaxed rotate-y-180 backface-hidden shadow-lg">
+            "May all your dreams and aspirations find their way into glowing reality."
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="group h-48 perspective-1000 cursor-pointer">
+        <div class="relative w-full h-full duration-500 transform-style-3d group-hover:rotate-y-180">
+          <div class="absolute inset-0 rounded-2xl bg-white border border-pink-100 shadow-md p-6 flex flex-col items-center justify-center gap-3 backface-hidden">
+            <div class="p-3 rounded-full bg-purple-100 text-purple-600"><i data-lucide="flower-2" class="w-6 h-6"></i></div>
+            <h3 class="font-serif font-bold text-slate-800">Warm Surroundings</h3>
+            <span class="text-xs text-purple-400">Hover / Tap to flip</span>
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-6 flex items-center justify-center text-center font-serif text-sm leading-relaxed rotate-y-180 backface-hidden shadow-lg">
+            "May you always be surrounded by people who genuinely love, cherish, and support you."
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="group h-48 perspective-1000 cursor-pointer">
+        <div class="relative w-full h-full duration-500 transform-style-3d group-hover:rotate-y-180">
+          <div class="absolute inset-0 rounded-2xl bg-white border border-pink-100 shadow-md p-6 flex flex-col items-center justify-center gap-3 backface-hidden">
+            <div class="p-3 rounded-full bg-emerald-100 text-emerald-600"><i data-lucide="award" class="w-6 h-6"></i></div>
+            <h3 class="font-serif font-bold text-slate-800">Health & Success</h3>
+            <span class="text-xs text-emerald-500">Hover / Tap to flip</span>
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 flex items-center justify-center text-center font-serif text-sm leading-relaxed rotate-y-180 backface-hidden shadow-lg">
+            "May success, peace, vibrant health, and true prosperity be your lifelong companions."
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="group h-48 perspective-1000 cursor-pointer">
+        <div class="relative w-full h-full duration-500 transform-style-3d group-hover:rotate-y-180">
+          <div class="absolute inset-0 rounded-2xl bg-white border border-pink-100 shadow-md p-6 flex flex-col items-center justify-center gap-3 backface-hidden">
+            <div class="p-3 rounded-full bg-rose-100 text-rose-600"><i data-lucide="smile" class="w-6 h-6"></i></div>
+            <h3 class="font-serif font-bold text-slate-800">Radiant Smile</h3>
+            <span class="text-xs text-rose-400">Hover / Tap to flip</span>
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 text-white p-6 flex items-center justify-center text-center font-serif text-sm leading-relaxed rotate-y-180 backface-hidden shadow-lg">
+            "May your radiant smile always remain as bright, warm, and beautiful as it is today."
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="group h-48 perspective-1000 cursor-pointer">
+        <div class="relative w-full h-full duration-500 transform-style-3d group-hover:rotate-y-180">
+          <div class="absolute inset-0 rounded-2xl bg-white border border-pink-100 shadow-md p-6 flex flex-col items-center justify-center gap-3 backface-hidden">
+            <div class="p-3 rounded-full bg-sky-100 text-sky-600"><i data-lucide="sparkles" class="w-6 h-6"></i></div>
+            <h3 class="font-serif font-bold text-slate-800">New Era</h3>
+            <span class="text-xs text-sky-500">Hover / Tap to flip</span>
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 text-white p-6 flex items-center justify-center text-center font-serif text-sm leading-relaxed rotate-y-180 backface-hidden shadow-lg">
+            "May the 25th chapter of your life be your most extraordinary, adventurous, and magical one yet."
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTERACTIVE CAKE & CANDLE BLOWING ================= -->
+  <section class="py-20 px-4 bg-gradient-to-b from-rose-50/60 to-purple-50/80 relative z-10">
+    <div class="max-w-3xl mx-auto text-center space-y-8">
+      
+      <div class="space-y-2">
+        <span class="text-sm uppercase tracking-widest text-rose-500 font-semibold">Make a Wish</span>
+        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
+          Close Your Eyes, Make a Wish, and Blow Out Your Candles! 🕯️🎂
+        </h2>
+        <p class="text-slate-600 text-sm">
+          Click the button or blow into your microphone to extinguish the flames!
+        </p>
+      </div>
+
+      <!-- Cake Container -->
+      <div class="relative w-72 h-64 mx-auto flex flex-col items-center justify-end">
+        
+        <!-- Candles Array -->
+        <div id="candlesRow" class="flex gap-3 mb-2 z-10">
+          <!-- 5 Candles -->
+          <div class="relative flex flex-col items-center">
+            <div class="flame-element w-3.5 h-5 bg-amber-400 rounded-full animate-flicker shadow-[0_0_12px_#fbbf24]"></div>
+            <div class="smoke-element hidden w-1.5 h-4 bg-slate-400/60 rounded-full animate-smoke"></div>
+            <div class="w-2 h-10 bg-gradient-to-b from-pink-300 to-rose-400 rounded-t-sm shadow"></div>
+          </div>
+          <div class="relative flex flex-col items-center">
+            <div class="flame-element w-3.5 h-5 bg-amber-400 rounded-full animate-flicker shadow-[0_0_12px_#fbbf24]"></div>
+            <div class="smoke-element hidden w-1.5 h-4 bg-slate-400/60 rounded-full animate-smoke"></div>
+            <div class="w-2 h-10 bg-gradient-to-b from-purple-300 to-indigo-400 rounded-t-sm shadow"></div>
+          </div>
+          <div class="relative flex flex-col items-center">
+            <div class="flame-element w-3.5 h-5 bg-amber-400 rounded-full animate-flicker shadow-[0_0_12px_#fbbf24]"></div>
+            <div class="smoke-element hidden w-1.5 h-4 bg-slate-400/60 rounded-full animate-smoke"></div>
+            <div class="w-2 h-10 bg-gradient-to-b from-amber-300 to-orange-400 rounded-t-sm shadow"></div>
+          </div>
+          <div class="relative flex flex-col items-center">
+            <div class="flame-element w-3.5 h-5 bg-amber-400 rounded-full animate-flicker shadow-[0_0_12px_#fbbf24]"></div>
+            <div class="smoke-element hidden w-1.5 h-4 bg-slate-400/60 rounded-full animate-smoke"></div>
+            <div class="w-2 h-10 bg-gradient-to-b from-purple-300 to-pink-400 rounded-t-sm shadow"></div>
+          </div>
+          <div class="relative flex flex-col items-center">
+            <div class="flame-element w-3.5 h-5 bg-amber-400 rounded-full animate-flicker shadow-[0_0_12px_#fbbf24]"></div>
+            <div class="smoke-element hidden w-1.5 h-4 bg-slate-400/60 rounded-full animate-smoke"></div>
+            <div class="w-2 h-10 bg-gradient-to-b from-pink-300 to-rose-400 rounded-t-sm shadow"></div>
+          </div>
+        </div>
+
+        <!-- Tier 1 Top Cake -->
+        <div class="w-52 h-16 bg-gradient-to-r from-pink-200 via-rose-300 to-pink-200 rounded-t-2xl border-b-4 border-rose-400 flex items-center justify-center shadow-md relative">
+          <span class="font-serif font-bold text-rose-800 text-xs tracking-wider">HAPPY 25TH</span>
+        </div>
+        <!-- Tier 2 Base Cake -->
+        <div class="w-64 h-20 bg-gradient-to-r from-amber-100 via-pink-100 to-amber-100 rounded-t-2xl border-b-4 border-pink-300 flex items-center justify-center shadow-lg">
+          <span class="font-script text-pink-600 text-2xl font-semibold displaySisterName">Didi</span>
+        </div>
+        <!-- Plate -->
+        <div class="w-72 h-4 bg-slate-200 rounded-full shadow-md"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap justify-center gap-4 pt-4">
+        <button id="blowCandlesBtn" onclick="blowCandles()" class="px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+          <i data-lucide="flame" class="w-5 h-5 text-amber-300"></i> Make a Birthday Wish ✨
+        </button>
+
+        <button id="micBlowBtn" onclick="startMicDetection()" class="px-5 py-3.5 rounded-full border border-slate-200 bg-white text-slate-700 text-sm font-semibold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm">
+          <i data-lucide="mic" class="w-4 h-4 text-rose-500"></i>
+          <span id="micBtnText">Blow via Mic 🎙️</span>
+        </button>
+      </div>
+
+      <!-- Wish Message Displayed on Blowout -->
+      <div id="wishGrantedBox" class="hidden animate-fade-in p-6 rounded-2xl bg-amber-100/90 border border-amber-200 text-amber-900 font-serif text-xl shadow-md space-y-2">
+        <p>✨ Your Wish Has Been Made! May it come true in every beautiful way! 💖</p>
+        <button onclick="resetCandles()" class="text-xs text-rose-600 underline font-sans">Relight Candles 🕯️</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= GRAND SPECIAL CONGRATULATIONS ================= -->
+  <section class="py-20 px-4 max-w-4xl mx-auto text-center relative z-10">
+    <div class="glass-card-dark rounded-3xl p-8 sm:p-12 border border-amber-200/60 shadow-xl space-y-6">
+      <div class="inline-flex p-3 rounded-full bg-amber-100 text-amber-700">
+        <i data-lucide="sparkles" class="w-8 h-8"></i>
+      </div>
+
+      <h2 class="text-3xl sm:text-5xl font-serif font-bold text-slate-800 leading-tight">
+        Many, Many Congratulations on Your 25th Birthday! 🥳💐
+      </h2>
+
+      <p class="text-slate-700 text-base sm:text-lg leading-relaxed font-light max-w-2xl mx-auto">
+        Congratulations on reaching this beautiful milestone! May 25 open the doors to extraordinary opportunities, amazing experiences, personal growth, and achievements that make you proud of yourself.
+      </p>
+
+      <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl mx-auto italic">
+        "Here's to a new year of becoming stronger, happier, wiser, and more confident. Celebrate yourself today, because you deserve every bit of happiness coming your way!"
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= GRAND FINALE & FIREWORKS REPLAY ================= -->
+  <section class="py-24 px-4 text-center relative z-10 bg-gradient-to-b from-transparent via-rose-100/40 to-rose-200/50">
+    <div class="max-w-3xl mx-auto space-y-8">
+      
+      <div class="space-y-4">
+        <h2 class="text-4xl sm:text-6xl font-serif font-bold text-rose-600 drop-shadow-sm">
+          Happy 25th Birthday, <br />
+          <span class="font-script font-normal italic text-slate-800 displaySisterName">My Beautiful Sister! ❤️🎂</span>
+        </h2>
+
+        <p class="text-slate-700 text-lg sm:text-xl font-light leading-relaxed max-w-xl mx-auto">
+          May your life always be filled with love, laughter, peace, prosperity, and countless beautiful surprises.
+        </p>
+
+        <p class="text-rose-700 font-medium text-base">
+          25 looks beautiful on you, and I hope this year gives you a thousand reasons to smile.
+        </p>
+      </div>
+
+      <div class="pt-4">
+        <button onclick="triggerFireworksReplay()" class="px-8 py-4 rounded-full bg-gradient-to-r from-amber-400 via-rose-500 to-purple-600 text-white font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto">
+          <i data-lucide="rotate-ccw" class="w-5 h-5"></i> Celebrate Again! 🎉
+        </button>
+      </div>
+
+      <div class="pt-12 text-slate-500 text-sm font-sans flex items-center justify-center gap-2 border-t border-rose-200/60 max-w-md mx-auto">
+        <span>Made with endless love, just for you.</span>
+        <i data-lucide="heart" class="w-4 h-4 text-rose-500 fill-rose-500"></i>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= CUSTOMIZER DRAWER ================= -->
+  <div id="customizerDrawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden justify-end">
+    <div class="w-full max-w-md bg-white h-full p-6 space-y-6 overflow-y-auto shadow-2xl relative">
+      
+      <div class="flex justify-between items-center border-b pb-4">
+        <h3 class="font-serif font-bold text-xl text-slate-800 flex items-center gap-2">
+          <i data-lucide="settings" class="w-5 h-5 text-rose-500"></i> Personalize Website
+        </h3>
+        <button onclick="toggleCustomizer()" class="p-2 rounded-full hover:bg-slate-100 text-slate-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Sister's Name / Nickname</label>
+          <input type="text" id="inputSisterName" value="Didi" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Your Name / Signature</label>
+          <input type="text" id="inputBrotherName" value="Your Loving Brother" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm">
+        </div>
+
+        <div class="pt-4 border-t">
+          <button onclick="saveCustomizations()" class="w-full py-3 rounded-xl bg-rose-500 text-white font-semibold text-sm shadow hover:bg-rose-600 transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i> Save & Apply Changes
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // --- State Variables ---
+    let sisterName = "Didi";
+    let brotherName = "Your Loving Brother";
+    let isMusicPlaying = false;
+    let isReadingSpeech = false;
+    let currentLightboxIdx = 0;
+
+    // Photos Data
+    let photos = [
+      {
+        id: 1,
+        url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
+        caption: 'Her radiant smile that brightens up every room ✨'
+      },
+      {
+        id: 2,
+        url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=800',
+        caption: 'Elegance, grace, and happiness in every step 💖'
+      },
+      {
+        id: 3,
+        url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=800',
+        caption: 'Creating memories that last a lifetime 🌸'
+      },
+      {
+        id: 4,
+        url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=800',
+        caption: 'Laughter, joy, and unconditional love 💫'
+      },
+      {
+        id: 5,
+        url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=800',
+        caption: 'Celebrating 25 beautiful years of life! 🎂'
+      },
+      {
+        id: 6,
+        url: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&q=80&w=800',
+        caption: 'Always dreaming, always shining bright ⭐'
+      }
     ];
 
-    let step = 0;
-    const playNext = () => {
-      if (!this.isPlaying) return;
-      const note = notes[step];
-      this.playTone(note.f, note.d, 'triangle', 0.12);
-      // Soft harmony chord
-      this.playTone(note.f / 2, note.d * 1.2, 'sine', 0.05);
-      
-      step = (step + 1) % notes.length;
-      this.melodyInterval = setTimeout(playNext, note.d * 900);
-    };
-    playNext();
-  }
+    // --- Web Audio API Synth Engine ---
+    class WebAudioSynth {
+      constructor() {
+        this.ctx = null;
+        this.melodyTimer = null;
+        this.isPlaying = false;
+      }
 
-  stopMusic() {
-    this.isPlaying = false;
-    if (this.melodyInterval) clearTimeout(this.melodyInterval);
-  }
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
 
-  playBlowSound() {
-    this.init();
-    // Chime cascade on candle blowout
-    const chimeFreqs = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-    chimeFreqs.forEach((f, idx) => {
-      setTimeout(() => {
-        this.playTone(f, 0.8, 'sine', 0.15);
-      }, idx * 100);
-    });
-  }
+      playTone(freq, duration, type = 'sine', gainVal = 0.1) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
-  playConfettiPop() {
-    this.init();
-    this.playTone(150, 0.2, 'square', 0.15);
-    setTimeout(() => this.playTone(400, 0.3, 'sine', 0.1), 50);
-  }
-}
+      playHappyBirthdayTune() {
+        this.init();
+        if (this.isPlaying) return;
+        this.isPlaying = true;
 
-const audioCtrl = new AudioController();
+        const notes = [
+          { f: 261.63, d: 0.4 }, { f: 261.63, d: 0.4 }, { f: 293.66, d: 0.8 }, { f: 261.63, d: 0.8 }, { f: 349.23, d: 0.8 }, { f: 329.63, d: 1.2 },
+          { f: 261.63, d: 0.4 }, { f: 261.63, d: 0.4 }, { f: 293.66, d: 0.8 }, { f: 261.63, d: 0.8 }, { f: 392.00, d: 0.8 }, { f: 349.23, d: 1.2 },
+          { f: 261.63, d: 0.4 }, { f: 261.63, d: 0.4 }, { f: 523.25, d: 0.8 }, { f: 440.00, d: 0.8 }, { f: 349.23, d: 0.8 }, { f: 329.63, d: 0.8 }, { f: 293.66, d: 0.8 },
+          { f: 466.16, d: 0.4 }, { f: 466.16, d: 0.4 }, { f: 440.00, d: 0.8 }, { f: 349.23, d: 0.8 }, { f: 392.00, d: 0.8 }, { f: 349.23, d: 1.4 }
+        ];
 
-// Custom Canvas Confetti & Particle Effect System
-const CanvasOverlay = ({ triggerFireworks, triggerConfetti }) => {
-  const canvasRef = useRef(null);
+        let step = 0;
+        const playNext = () => {
+          if (!this.isPlaying) return;
+          const note = notes[step];
+          this.playTone(note.f, note.d, 'triangle', 0.1);
+          this.playTone(note.f / 2, note.d * 1.2, 'sine', 0.04);
+          step = (step + 1) % notes.length;
+          this.melodyTimer = setTimeout(playNext, note.d * 900);
+        };
+        playNext();
+      }
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+      stopMusic() {
+        this.isPlaying = false;
+        if (this.melodyTimer) clearTimeout(this.melodyTimer);
+      }
+
+      playChimeEffect() {
+        this.init();
+        [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, idx) => {
+          setTimeout(() => this.playTone(f, 0.8, 'sine', 0.12), idx * 100);
+        });
+      }
+
+      playPop() {
+        this.init();
+        this.playTone(180, 0.2, 'square', 0.12);
+        setTimeout(() => this.playTone(420, 0.3, 'sine', 0.08), 50);
+      }
+    }
+
+    const audioSynth = new WebAudioSynth();
+
+    // Toggle Music Handler
+    function toggleMusic() {
+      const icon = document.getElementById('musicIcon');
+      const text = document.getElementById('musicText');
+
+      if (isMusicPlaying) {
+        audioSynth.stopMusic();
+        isMusicPlaying = false;
+        text.innerText = "Play Melody 🎵";
+        icon.setAttribute('data-lucide', 'volume-x');
+      } else {
+        audioSynth.playHappyBirthdayTune();
+        isMusicPlaying = true;
+        text.innerText = "Playing Birthday Song 🎶";
+        icon.setAttribute('data-lucide', 'volume-2');
+      }
+      lucide.createIcons();
+    }
+
+    // --- HTML5 Canvas Overlay (Confetti, Fireworks, Petals) ---
+    const canvas = document.getElementById('fxCanvas');
     const ctx = canvas.getContext('2d');
-    let animationFrameId;
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    const handleResize = () => {
+    window.addEventListener('resize', () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', handleResize);
+    });
 
-    // Particles array
     let particles = [];
 
-    // Continuous floating bokeh / petals
+    // Continuous Falling Petals
     const petalColors = ['#ffb7b2', '#ffdac1', '#e2f0cb', '#b5ead7', '#c7ceea', '#f3abb6', '#ffd1dc'];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 35; i++) {
       particles.push({
         type: 'petal',
         x: Math.random() * width,
@@ -131,34 +786,35 @@ const CanvasOverlay = ({ triggerFireworks, triggerConfetti }) => {
       });
     }
 
-    // Helper to add Confetti Burst
-    const burstConfetti = () => {
-      for (let i = 0; i < 120; i++) {
+    function spawnConfettiBurst() {
+      audioSynth.playPop();
+      for (let i = 0; i < 110; i++) {
         particles.push({
           type: 'confetti',
           x: width / 2,
-          y: height / 2 + 100,
-          vx: (Math.random() - 0.5) * 18,
-          vy: (Math.random() - 0.8) * 18,
+          y: height / 2,
+          vx: (Math.random() - 0.5) * 20,
+          vy: (Math.random() - 0.8) * 20,
           size: Math.random() * 8 + 4,
-          color: ['#gold', '#ff6b8b', '#d4af37', '#9b51e0', '#ff85a1', '#ffffff'][Math.floor(Math.random() * 6)],
+          color: ['#D4AF37', '#ff6b8b', '#9b51e0', '#ff85a1', '#38ef7d', '#ffffff'][Math.floor(Math.random() * 6)],
           rotation: Math.random() * 360,
           rotSpeed: (Math.random() - 0.5) * 10,
           life: 1,
-          decay: Math.random() * 0.01 + 0.005
+          decay: Math.random() * 0.012 + 0.008
         });
       }
-    };
+    }
 
-    // Helper to add Firework Burst
-    const burstFireworks = () => {
+    function spawnFireworksBurst() {
       const cx = Math.random() * (width - 200) + 100;
-      const cy = Math.random() * (height / 2) + 100;
-      const fireworkColors = ['#ffd700', '#ff69b4', '#00ffff', '#ff1493', '#7b68ee'];
-      const color = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+      const cy = Math.random() * (height / 2) + 80;
+      const fireColors = ['#ffd700', '#ff69b4', '#00ffff', '#ff1493', '#7b68ee'];
+      const color = fireColors[Math.floor(Math.random() * fireColors.length)];
 
-      for (let i = 0; i < 80; i++) {
-        const angle = (Math.PI * 2 * i) / 80;
+      audioSynth.playChimeEffect();
+
+      for (let i = 0; i < 70; i++) {
+        const angle = (Math.PI * 2 * i) / 70;
         const speed = Math.random() * 6 + 2;
         particles.push({
           type: 'firework',
@@ -166,22 +822,15 @@ const CanvasOverlay = ({ triggerFireworks, triggerConfetti }) => {
           y: cy,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          size: Math.random() * 3 + 1,
+          size: Math.random() * 3 + 1.5,
           color: color,
           alpha: 1,
           decay: Math.random() * 0.02 + 0.015
         });
       }
-    };
-
-    if (triggerConfetti) burstConfetti();
-    if (triggerFireworks) {
-      burstFireworks();
-      const interval = setInterval(burstFireworks, 1200);
-      setTimeout(() => clearInterval(interval), 6000);
     }
 
-    const render = () => {
+    function renderCanvasFX() {
       ctx.clearRect(0, 0, width, height);
 
       particles.forEach((p, idx) => {
@@ -207,7 +856,7 @@ const CanvasOverlay = ({ triggerFireworks, triggerConfetti }) => {
         } else if (p.type === 'confetti') {
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.2; // gravity
+          p.vy += 0.25; // gravity
           p.rotation += p.rotSpeed;
           p.life -= p.decay;
 
@@ -219,14 +868,14 @@ const CanvasOverlay = ({ triggerFireworks, triggerConfetti }) => {
           ctx.save();
           ctx.translate(p.x, p.y);
           ctx.rotate((p.rotation * Math.PI) / 180);
-          ctx.fillStyle = p.color === '#gold' ? '#D4AF37' : p.color;
+          ctx.fillStyle = p.color;
           ctx.globalAlpha = p.life;
           ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
           ctx.restore();
         } else if (p.type === 'firework') {
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.05; // slight gravity
+          p.vy += 0.05;
           p.alpha -= p.decay;
 
           if (p.alpha <= 0) {
@@ -244,737 +893,237 @@ const CanvasOverlay = ({ triggerFireworks, triggerConfetti }) => {
         }
       });
 
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [triggerConfetti, triggerFireworks]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-30"
-    />
-  );
-};
-
-export default function App() {
-  // Customizable State Data
-  const [sisterName, setSisterName] = useState('Didi');
-  const [brotherName, setBrotherName] = useState('Your Loving Brother');
-  const [primaryTheme, setPrimaryTheme] = useState('rose'); // 'rose', 'lavender', 'gold'
-
-  // Interactive UI State
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [confettiBurst, setConfettiBurst] = useState(false);
-  const [fireworksActive, setFireworksActive] = useState(false);
-  const [letterOpen, setLetterOpen] = useState(false);
-  const [isReadingLetter, setIsReadingLetter] = useState(false);
-  const [candlesBlown, setCandlesBlown] = useState(false);
-  const [micActive, setMicActive] = useState(false);
-  const [customizerOpen, setCustomizerOpen] = useState(false);
-  const [wishGrantedMsg, setWishGrantedMsg] = useState(false);
-
-  // Lightbox & Gallery State
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [slideshowActive, setSlideshowActive] = useState(false);
-  const [photos, setPhotos] = useState([
-    {
-      id: 1,
-      url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
-      caption: 'Her radiant smile that brightens up every room ✨',
-      tag: 'sister'
-    },
-    {
-      id: 2,
-      url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=800',
-      caption: 'Elegance and grace in every step 💖',
-      tag: 'celebration'
-    },
-    {
-      id: 3,
-      url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=800',
-      caption: 'Creating memories that last a lifetime 🌸',
-      tag: 'memories'
-    },
-    {
-      id: 4,
-      url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=800',
-      caption: 'Laughter, joy, and unconditional love 💫',
-      tag: 'sister'
-    },
-    {
-      id: 5,
-      url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=800',
-      caption: 'Celebrating 25 beautiful years of life! 🎂',
-      tag: 'celebration'
-    },
-    {
-      id: 6,
-      url: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&q=80&w=800',
-      caption: 'Always dreaming, always shining bright ⭐',
-      tag: 'memories'
+      requestAnimationFrame(renderCanvasFX);
     }
-  ]);
 
-  // Audio Music Toggle Handler
-  const toggleMusic = () => {
-    if (isMusicPlaying) {
-      audioCtrl.stopMusic();
-      setIsMusicPlaying(false);
-    } else {
-      audioCtrl.playHappyBirthdayTune();
-      setIsMusicPlaying(true);
+    renderCanvasFX();
+
+    // --- Interactive Functions ---
+
+    function triggerHeroSurprise() {
+      spawnConfettiBurst();
+      document.getElementById('letterSection').scrollIntoView({ behavior: 'smooth' });
     }
-  };
 
-  // Trigger Confetti Pop
-  const triggerConfettiPop = () => {
-    audioCtrl.playConfettiPop();
-    setConfettiBurst(true);
-    setTimeout(() => setConfettiBurst(false), 2500);
-  };
+    function openLetter() {
+      audioSynth.playChimeEffect();
+      document.getElementById('envelopeClosed').classList.add('hidden');
+      document.getElementById('envelopeOpened').classList.remove('hidden');
+      spawnConfettiBurst();
+    }
 
-  // Trigger Letter Reading Synthesis
-  const toggleReadLetter = () => {
-    if ('speechSynthesis' in window) {
-      if (isReadingLetter) {
+    function closeLetter() {
+      document.getElementById('envelopeClosed').classList.remove('hidden');
+      document.getElementById('envelopeOpened').classList.add('hidden');
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function toggleSpeech() {
+      if (!('speechSynthesis' in window)) {
+        alert('Text-to-speech is not supported on this browser.');
+        return;
+      }
+
+      const btnText = document.getElementById('speechBtnText');
+
+      if (isReadingSpeech) {
         window.speechSynthesis.cancel();
-        setIsReadingLetter(false);
+        isReadingSpeech = false;
+        btnText.innerText = "Listen 🎧";
       } else {
-        const text = `My Dearest Sister ${sisterName}. Happy 25th Birthday to one of the most special people in my life! Today marks 25 beautiful years of your existence, and I hope you know just how precious, wonderful, and loved you truly are. May this new chapter bring you endless happiness and success. With lots of love, ${brotherName}.`;
+        const text = `My Dearest Sister ${sisterName}. Happy 25th Birthday to one of the most special people in my life! Today marks 25 beautiful years of your existence, and I hope you know just how precious, wonderful, and loved you truly are. May this new chapter bring you endless happiness, beautiful memories, genuine love, inner peace, and success beyond your imagination. With lots of love, ${brotherName}.`;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.9;
         utterance.pitch = 1.0;
-        utterance.onend = () => setIsReadingLetter(false);
-        setIsReadingLetter(true);
+        utterance.onend = () => {
+          isReadingSpeech = false;
+          btnText.innerText = "Listen 🎧";
+        };
+        isReadingSpeech = true;
+        btnText.innerText = "Stop Reading 🔇";
         window.speechSynthesis.speak(utterance);
       }
     }
-  };
 
-  // Candle Blow Out Handler
-  const handleBlowCandles = () => {
-    setCandlesBlown(true);
-    audioCtrl.playBlowSound();
-    setWishGrantedMsg(true);
-    triggerConfettiPop();
-  };
-
-  // Optional Microphone Blowing Handler
-  const startMicBlowing = async () => {
-    try {
-      setMicActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioCtx.createAnalyser();
-      const microphone = audioCtx.createMediaStreamSource(stream);
-      microphone.connect(analyser);
-      analyser.fftSize = 256;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-
-      const checkVolume = () => {
-        analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          sum += dataArray[i];
-        }
-        let average = sum / bufferLength;
-        // High volume detected -> blow out candles
-        if (average > 45) {
-          handleBlowCandles();
-          stream.getTracks().forEach((track) => track.stop());
-          setMicActive(false);
-        } else if (!candlesBlown) {
-          requestAnimationFrame(checkVolume);
-        }
-      };
-      checkVolume();
-    } catch (err) {
-      console.warn('Microphone access denied or not supported');
-      setMicActive(false);
-      handleBlowCandles(); // Fallback
-    }
-  };
-
-  // Custom Photo Upload Simulator
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      const newPic = {
-        id: Date.now(),
-        url: imageUrl,
-        caption: 'Unforgettable Sister Memory 💖',
-        tag: 'sister'
-      };
-      setPhotos([newPic, ...photos]);
-    }
-  };
-
-  // Slideshow Auto Timer
-  useEffect(() => {
-    let interval;
-    if (slideshowActive) {
-      interval = setInterval(() => {
-        setSelectedPhoto((prev) => {
-          if (!prev) return photos[0];
-          const currIdx = photos.findIndex((p) => p.id === prev.id);
-          return photos[(currIdx + 1) % photos.length];
-        });
-      }, 3000);
-    }
-    return () => clearInterval(interval);
-  }, [slideshowActive, photos]);
-
-  return (
-    <div className={`min-h-screen font-sans selection:bg-pink-300 selection:text-pink-900 bg-gradient-to-b from-rose-50 via-purple-50 to-amber-50 text-slate-800 relative overflow-x-hidden`}>
+    function copyLetterText() {
+      const text = `My Dearest Sister ${sisterName},\n\nHappy 25th Birthday to one of the most special people in my life! Today marks 25 beautiful years of your existence, and I hope you know just how precious, wonderful, and loved you truly are.\n\nWith lots of love,\n${brotherName}`;
       
-      {/* Canvas Effects */}
-      <CanvasOverlay triggerConfetti={confettiBurst} triggerFireworks={fireworksActive} />
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      alert('Letter text copied to clipboard! 💌');
+    }
 
-      {/* Floating Audio & Customizer Control Bar */}
-      <div className="fixed top-5 right-5 z-50 flex items-center gap-3">
-        <button
-          onClick={toggleMusic}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-pink-200/80 hover:bg-white hover:scale-105 transition-all text-pink-600 font-medium text-sm group"
-          title="Toggle Background Music"
-        >
-          {isMusicPlaying ? (
-            <>
-              <Volume2 className="w-4 h-4 animate-bounce text-pink-500" />
-              <span className="hidden sm:inline">Playing Birthday Song</span>
-            </>
-          ) : (
-            <>
-              <VolumeX className="w-4 h-4 text-slate-400 group-hover:text-pink-500" />
-              <span className="hidden sm:inline">Play Music</span>
-            </>
-          )}
-        </button>
+    // --- Cake & Candles Logic ---
 
-        <button
-          onClick={() => setCustomizerOpen(true)}
-          className="p-2.5 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-rose-200 text-rose-600 hover:bg-rose-50 hover:rotate-45 transition-all"
-          title="Customize Names & Settings"
-        >
-          <Settings className="w-5 h-5" />
-        </button>
-      </div>
+    function blowCandles() {
+      const flames = document.querySelectorAll('.flame-element');
+      const smokes = document.querySelectorAll('.smoke-element');
+      
+      flames.forEach(f => f.classList.add('hidden'));
+      smokes.forEach(s => s.classList.remove('hidden'));
 
-      {/* ================= HERO SECTION ================= */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-4 overflow-hidden pt-12 pb-16">
-        
-        {/* Soft Animated Background Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-200/50 rounded-full blur-3xl pointer-events-none animate-pulse" />
-        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-purple-200/40 rounded-full blur-3xl pointer-events-none" />
+      audioSynth.playChimeEffect();
+      spawnConfettiBurst();
 
-        {/* Floating Balloons Visual Elements */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-10 left-[10%] text-4xl animate-bounce duration-[3000ms]">🎈</div>
-          <div className="absolute top-1/3 right-[12%] text-5xl animate-bounce duration-[4000ms] delay-300">🎂</div>
-          <div className="absolute bottom-1/4 left-[8%] text-3xl animate-bounce duration-[3500ms] delay-700">🎁</div>
-          <div className="absolute top-20 right-[25%] text-3xl animate-bounce duration-[2500ms]">✨</div>
-        </div>
+      document.getElementById('blowCandlesBtn').classList.add('hidden');
+      document.getElementById('micBlowBtn').classList.add('hidden');
+      document.getElementById('wishGrantedBox').classList.remove('hidden');
+    }
 
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100/80 border border-rose-200 text-rose-700 text-sm font-medium shadow-sm animate-fade-in">
-            <Sparkles className="w-4 h-4 text-amber-500" /> A Special Surprise for My Sister
+    function resetCandles() {
+      const flames = document.querySelectorAll('.flame-element');
+      const smokes = document.querySelectorAll('.smoke-element');
+
+      flames.forEach(f => f.classList.remove('hidden'));
+      smokes.forEach(s => s.classList.add('hidden'));
+
+      document.getElementById('blowCandlesBtn').classList.remove('hidden');
+      document.getElementById('micBlowBtn').classList.remove('hidden');
+      document.getElementById('wishGrantedBox').classList.add('hidden');
+    }
+
+    async function startMicDetection() {
+      const text = document.getElementById('micBtnText');
+      text.innerText = "Listening... Blow now!";
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioCtx.createAnalyser();
+        const microphone = audioCtx.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        const checkVolume = () => {
+          analyser.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
+          let avg = sum / bufferLength;
+
+          if (avg > 40) {
+            blowCandles();
+            stream.getTracks().forEach(track => track.stop());
+            text.innerText = "Blow via Mic 🎙️";
+          } else {
+            requestAnimationFrame(checkVolume);
+          }
+        };
+        checkVolume();
+      } catch (err) {
+        alert("Microphone permission denied or not supported. Using button blowout instead.");
+        blowCandles();
+        text.innerText = "Blow via Mic 🎙️";
+      }
+    }
+
+    // --- Gallery Logic ---
+
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      grid.innerHTML = '';
+
+      photos.forEach((photo, index) => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 pb-6 rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-rotate-1 hover:scale-105 cursor-pointer border border-slate-100 group relative";
+        card.onclick = () => openLightbox(index);
+
+        card.innerHTML = `
+          <div class="w-full h-64 overflow-hidden rounded-lg bg-slate-100 relative">
+            <img src="${photo.url}" alt="Memory" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/fce7f3/db2777?text=Memory'">
+            <div class="absolute inset-0 bg-rose-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+              <i data-lucide="eye" class="w-8 h-8 drop-shadow"></i>
+            </div>
           </div>
-
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-purple-600 to-amber-600 tracking-tight leading-tight py-2">
-            Happy 25th Birthday, <br />
-            <span className="font-script text-pink-600 font-normal italic drop-shadow-sm">
-              My Dearest Sister {sisterName}! 🎂💖
-            </span>
-          </h1>
-
-          <p className="text-xl sm:text-2xl font-serif text-slate-700 max-w-2xl mx-auto font-light leading-relaxed">
-            “25 Years of Beautiful Memories, Endless Smiles, and a Heart Full of Dreams.”
+          <p class="font-serif italic text-slate-700 text-center text-sm pt-4 px-2">
+            "${photo.caption}"
           </p>
+        `;
+        grid.appendChild(card);
+      });
 
-          <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto font-sans leading-relaxed">
-            Today isn't just another birthday. It's a celebration of the wonderful person you are, the happiness you bring into our lives, and all the incredible things waiting for you ahead.
-          </p>
+      lucide.createIcons();
+    }
 
-          <div className="pt-6">
-            <button
-              onClick={() => {
-                triggerConfettiPop();
-                document.getElementById('letter-section')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-600 text-white font-semibold text-lg shadow-xl shadow-rose-200 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
-            >
-              <Gift className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              Open Your Birthday Surprise ✨
-            </button>
-          </div>
-        </div>
-      </section>
+    function openLightbox(index) {
+      currentLightboxIdx = index;
+      const photo = photos[index];
+      document.getElementById('lightboxImg').src = photo.url;
+      document.getElementById('lightboxCaption').innerText = photo.caption;
+      document.getElementById('lightboxModal').classList.remove('hidden');
+      document.getElementById('lightboxModal').classList.add('flex');
+    }
 
-      {/* ================= HEARTFELT BIRTHDAY LETTER SECTION ================= */}
-      <section id="letter-section" className="py-20 px-4 max-w-4xl mx-auto relative z-10">
-        <div className="text-center mb-12 space-y-3">
-          <span className="text-sm uppercase tracking-widest text-rose-500 font-semibold">From the Heart</span>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
-            A Handwritten Letter For You ✉️
-          </h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-pink-400 to-rose-500 mx-auto rounded-full" />
-        </div>
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.add('hidden');
+      document.getElementById('lightboxModal').classList.remove('flex');
+    }
 
-        {/* Envelope Container */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-6 sm:p-10 shadow-xl border border-pink-100 relative overflow-hidden transition-all duration-500">
-          
-          {!letterOpen ? (
-            /* Closed Envelope View */
-            <div className="text-center py-12 px-4 space-y-6 flex flex-col items-center">
-              <div className="w-24 h-24 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 shadow-inner animate-pulse">
-                <Heart className="w-12 h-12 fill-rose-400 text-rose-500" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-serif font-bold text-slate-800">For My Dearest Sister {sisterName}</h3>
-                <p className="text-slate-500 text-sm">Sealed with unconditional love & warmth</p>
-              </div>
-              <button
-                onClick={() => setLetterOpen(true)}
-                className="px-6 py-3 rounded-full bg-gradient-to-r from-rose-400 to-pink-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all"
-              >
-                Open My Birthday Letter 💌
-              </button>
-            </div>
-          ) : (
-            /* Unfolded Letter Content */
-            <div className="space-y-6 relative animate-fade-in">
-              <div className="flex justify-between items-center border-b border-rose-100 pb-4">
-                <div className="flex items-center gap-2 text-rose-600 font-serif font-bold text-lg">
-                  <Sparkles className="w-5 h-5" /> 25th Birthday Special Edition
-                </div>
-                <button
-                  onClick={toggleReadLetter}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100 transition-colors"
-                >
-                  <Volume2 className="w-4 h-4" />
-                  {isReadingLetter ? 'Stop Voice Reader' : 'Listen to Letter 🎧'}
-                </button>
-              </div>
+    function navLightbox(direction) {
+      currentLightboxIdx = (currentLightboxIdx + direction + photos.length) % photos.length;
+      openLightbox(currentLightboxIdx);
+    }
 
-              <div className="font-serif text-slate-700 text-lg sm:text-xl leading-relaxed space-y-5 bg-amber-50/50 p-6 sm:p-8 rounded-2xl border border-amber-100/60 shadow-inner">
-                <p className="font-semibold text-rose-700 text-xl">My Dearest Sister {sisterName},</p>
-                <p>
-                  Happy 25th Birthday to one of the most special people in my life! ❤️
-                </p>
-                <p>
-                  Today marks 25 beautiful years of your existence, and I hope you know just how precious, wonderful, and loved you truly are.
-                </p>
-                <p>
-                  May this new chapter of your life bring you endless happiness, incredible opportunities, beautiful memories, genuine love, inner peace, and success beyond your imagination.
-                </p>
-                <p>
-                  May every dream you've ever held close to your heart slowly turn into reality. May you always find the courage to chase what makes you happy, the strength to overcome every challenge, and countless reasons to smile every single day.
-                </p>
-                <p>
-                  Thank you for being the amazing person you are. No matter how much life changes or how many years pass, you'll always hold a special place in my heart.
-                </p>
-                <p>
-                  Congratulations on completing 25 wonderful years and beginning another beautiful chapter of your life! I'm wishing you many, many more years filled with good health, laughter, blessings, achievements, and unforgettable moments.
-                </p>
-                <p className="font-semibold text-rose-800">
-                  Happy 25th Birthday, {sisterName}! 🎂🎉💗
-                </p>
-                <p>
-                  Keep smiling, keep shining, keep dreaming, and keep being the incredible person you are.
-                </p>
-                <div className="pt-4 border-t border-rose-200/60 text-right">
-                  <p className="italic text-slate-600">With lots of love, hugs, and the warmest wishes,</p>
-                  <p className="font-bold text-rose-700 text-2xl font-serif mt-1">{brotherName} ❤️</p>
-                </div>
-              </div>
+    function uploadCustomPhoto(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        photos.unshift({
+          id: Date.now(),
+          url: url,
+          caption: 'Special Memory with Sister 💖'
+        });
+        renderGallery();
+        spawnConfettiBurst();
+      }
+    }
 
-              <div className="text-center pt-2">
-                <button
-                  onClick={() => setLetterOpen(false)}
-                  className="text-xs text-slate-400 hover:text-slate-600 underline"
-                >
-                  Fold letter back
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+    // --- Customizer Modal ---
 
-      {/* ================= THE AGE 25 CELEBRATION ================= */}
-      <section className="py-20 px-4 bg-gradient-to-r from-rose-100/50 via-purple-100/40 to-amber-100/50 relative overflow-hidden">
-        <div className="max-w-5xl mx-auto text-center space-y-12 relative z-10">
-          
-          <div className="space-y-4">
-            {/* Glowing 3D Number 25 */}
-            <div className="inline-block relative">
-              <span className="text-8xl sm:text-9xl font-extrabold font-serif text-transparent bg-clip-text bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 drop-shadow-2xl tracking-tighter">
-                25
-              </span>
-              <Sparkles className="w-10 h-10 text-amber-400 absolute -top-2 -right-4 animate-spin" />
-              <Heart className="w-8 h-8 text-rose-400 absolute -bottom-2 -left-4 fill-rose-300 animate-bounce" />
-            </div>
+    function toggleCustomizer() {
+      const drawer = document.getElementById('customizerDrawer');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        drawer.classList.add('flex');
+      } else {
+        drawer.classList.add('hidden');
+        drawer.classList.remove('flex');
+      }
+    }
 
-            <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-800">
-              Chapter 25: Your Most Beautiful Era Begins Now ✨
-            </h2>
+    function saveCustomizations() {
+      const sName = document.getElementById('inputSisterName').value.trim();
+      const bName = document.getElementById('inputBrotherName').value.trim();
 
-            <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed font-light">
-              May your 25th year be filled with new adventures, unexpected blessings, exciting opportunities, unforgettable memories, and the courage to become everything you've ever dreamed of being.
-            </p>
-          </div>
+      if (sName) sisterName = sName;
+      if (bName) brotherName = bName;
 
-          {/* Animated Milestone Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: Award, title: '25 Years', desc: 'Of Beautiful Life & Light' },
-              { icon: Smile, title: 'Countless Reasons', desc: 'To Smile Every Day' },
-              { icon: Star, title: 'Endless Dreams', desc: 'Waiting to Be Chased' },
-              { icon: Heart, title: 'A Million Memories', desc: 'Yet to Be Made Together' }
-            ].map((card, idx) => (
-              <div
-                key={idx}
-                className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/60 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 text-left space-y-3 group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform">
-                  <card.icon className="w-6 h-6" />
-                </div>
-                <h3 className="font-serif font-bold text-xl text-slate-800">{card.title}</h3>
-                <p className="text-slate-500 text-sm">{card.desc}</p>
-              </div>
-            ))}
-          </div>
+      document.querySelectorAll('.displaySisterName').forEach(el => el.innerText = sisterName);
+      document.querySelectorAll('.displayBrotherName').forEach(el => el.innerText = brotherName);
 
-        </div>
-      </section>
+      toggleCustomizer();
+      spawnConfettiBurst();
+    }
 
-      {/* ================= A GALLERY OF LOVE & MEMORIES ================= */}
-      <section className="py-20 px-4 max-w-6xl mx-auto relative z-10">
-        <div className="text-center space-y-3 mb-12">
-          <span className="text-sm uppercase tracking-widest text-rose-500 font-semibold">Precious Memories</span>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
-            Beautiful Memories, Priceless Moments 📸💖
-          </h2>
-          <p className="text-slate-600 max-w-xl mx-auto text-sm sm:text-base">
-            Every picture tells a story, and every memory reminds me how lucky I am to have you as my sister.
-          </p>
+    function triggerFireworksReplay() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      spawnConfettiBurst();
+      for (let i = 0; i < 5; i++) {
+        setTimeout(spawnFireworksBurst, i * 900);
+      }
+    }
 
-          {/* Photo Actions Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button
-              onClick={() => setSlideshowActive(!slideshowActive)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-2 border transition-all ${
-                slideshowActive
-                  ? 'bg-rose-500 text-white border-rose-500'
-                  : 'bg-white text-rose-600 border-rose-200 hover:bg-rose-50'
-              }`}
-            >
-              {slideshowActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              {slideshowActive ? 'Pause Slideshow' : 'Play Slideshow Mode'}
-            </button>
-
-            <label className="px-4 py-2 rounded-full bg-white text-slate-700 border border-slate-200 text-xs font-semibold flex items-center gap-2 cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-              <Plus className="w-3.5 h-3.5 text-rose-500" />
-              Add Your Photo
-              <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-            </label>
-          </div>
-        </div>
-
-        {/* Polaroid Scrapbook Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {photos.map((photo) => (
-            <div
-              key={photo.id}
-              onClick={() => setSelectedPhoto(photo)}
-              className="bg-white p-4 pb-6 rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-rotate-1 hover:scale-105 cursor-pointer border border-slate-100 group relative"
-            >
-              <div className="w-full h-64 overflow-hidden rounded-lg bg-slate-100 relative">
-                <img
-                  src={photo.url}
-                  alt={photo.caption}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-rose-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <Eye className="w-8 h-8 drop-shadow" />
-                </div>
-              </div>
-              <p className="font-serif italic text-slate-700 text-center text-sm pt-4 px-2">
-                "{photo.caption}"
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Lightbox Modal */}
-      {selectedPhoto && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative max-w-3xl w-full bg-white p-4 rounded-2xl shadow-2xl space-y-4">
-            <button
-              onClick={() => setSelectedPhoto(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 z-10"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="max-h-[75vh] overflow-hidden rounded-xl bg-black">
-              <img src={selectedPhoto.url} alt="Lightbox View" className="w-full h-full object-contain mx-auto" />
-            </div>
-
-            <p className="text-center font-serif italic text-slate-700 text-lg">
-              {selectedPhoto.caption}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ================= BIRTHDAY WISHES & BLESSINGS ================= */}
-      <section className="py-20 px-4 max-w-5xl mx-auto relative z-10">
-        <div className="text-center space-y-3 mb-12">
-          <span className="text-sm uppercase tracking-widest text-rose-500 font-semibold">Special Blessings</span>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
-            Wishes & Blessings For Your Journey 🌟
-          </h2>
-          <p className="text-slate-600 max-w-lg mx-auto text-sm">
-            May each of these heart-sent wishes bring a touch of warm magic to your life today.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            { icon: Heart, text: 'May happiness follow you wherever life takes you.' },
-            { icon: Star, text: 'May all your dreams find their way into reality.' },
-            { icon: Flower2, text: 'May you always be surrounded by people who genuinely love and appreciate you.' },
-            { icon: Award, text: 'May success, peace, good health, and prosperity be yours.' },
-            { icon: Smile, text: 'May your smile always remain as beautiful as it is today.' },
-            { icon: Gift, text: 'May the next chapter of your life be your most extraordinary one yet.' }
-          ].map((wish, i) => (
-            <div
-              key={i}
-              className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-pink-100 shadow-md hover:shadow-xl hover:border-pink-300 transition-all duration-300 flex items-start gap-4 group"
-            >
-              <div className="p-3 rounded-xl bg-pink-100 text-pink-600 group-hover:bg-pink-500 group-hover:text-white transition-colors shadow-sm">
-                <wish.icon className="w-6 h-6" />
-              </div>
-              <p className="font-serif text-slate-700 leading-relaxed text-base pt-1">
-                "{wish.text}"
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= THE INTERACTIVE BIRTHDAY CAKE & CANDLES ================= */}
-      <section className="py-20 px-4 bg-gradient-to-b from-rose-50/60 to-purple-50/80 relative z-10">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-          
-          <div className="space-y-2">
-            <span className="text-sm uppercase tracking-widest text-rose-500 font-semibold">Make a Wish</span>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-800">
-              Close Your Eyes, Make a Wish, and Blow Out Your Candles! 🕯️🎂
-            </h2>
-            <p className="text-slate-600 text-sm">
-              Click the button below or blow into your microphone to put out the candles!
-            </p>
-          </div>
-
-          {/* SVG Birthday Cake Component */}
-          <div className="relative w-64 h-64 mx-auto flex flex-col items-center justify-end">
-            
-            {/* Candle Flames Array */}
-            <div className="flex gap-2 mb-2 z-10">
-              {[...Array(5)].map((_, idx) => (
-                <div key={idx} className="relative flex flex-col items-center">
-                  {!candlesBlown ? (
-                    <div className="w-3 h-4 bg-amber-400 rounded-full animate-pulse shadow-[0_0_12px_#fbbf24]" />
-                  ) : (
-                    /* Smoke particle after blowout */
-                    <div className="w-1 h-3 bg-slate-300/60 rounded-full animate-ping" />
-                  )}
-                  <div className="w-1.5 h-8 bg-gradient-to-b from-pink-300 to-rose-400 rounded-t-sm" />
-                </div>
-              ))}
-            </div>
-
-            {/* Cake Layers */}
-            <div className="w-48 h-16 bg-gradient-to-r from-pink-200 via-rose-300 to-pink-200 rounded-t-2xl border-b-4 border-rose-400 flex items-center justify-center shadow-md relative">
-              <span className="font-serif font-bold text-rose-700 text-xs tracking-wider">HAPPY 25TH</span>
-            </div>
-            <div className="w-60 h-20 bg-gradient-to-r from-amber-100 via-pink-100 to-amber-100 rounded-t-2xl border-b-4 border-pink-300 flex items-center justify-center shadow-lg">
-              <span className="font-script text-pink-600 text-lg">{sisterName}</span>
-            </div>
-            {/* Cake Plate */}
-            <div className="w-64 h-4 bg-slate-200 rounded-full shadow-md" />
-          </div>
-
-          {/* Interactive Controls */}
-          <div className="flex flex-wrap justify-center gap-4 pt-4">
-            {!candlesBlown ? (
-              <>
-                <button
-                  onClick={handleBlowCandles}
-                  className="px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
-                >
-                  <Flame className="w-5 h-5 text-amber-300" /> Make a Birthday Wish ✨
-                </button>
-
-                <button
-                  onClick={startMicBlowing}
-                  className={`px-5 py-3.5 rounded-full border text-sm font-semibold flex items-center gap-2 transition-all ${
-                    micActive
-                      ? 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  <Mic className="w-4 h-4 text-rose-500" />
-                  {micActive ? 'Listening for your blow...' : 'Blow via Mic 🎙️'}
-                </button>
-              </>
-            ) : (
-              <div className="space-y-3 animate-fade-in">
-                <div className="p-4 rounded-2xl bg-amber-100/80 border border-amber-200 text-amber-900 font-serif text-lg shadow-sm">
-                  ✨ May your birthday wish come true! 💖
-                </div>
-                <button
-                  onClick={() => {
-                    setCandlesBlown(false);
-                    setWishGrantedMsg(false);
-                  }}
-                  className="text-xs text-rose-600 underline hover:text-rose-800"
-                >
-                  Relight Candles 🕯️
-                </button>
-              </div>
-            )}
-          </div>
-
-        </div>
-      </section>
-
-      {/* ================= A SPECIAL CONGRATULATIONS SECTION ================= */}
-      <section className="py-20 px-4 max-w-4xl mx-auto text-center relative z-10">
-        <div className="bg-gradient-to-br from-amber-500/10 via-rose-500/10 to-purple-500/10 backdrop-blur-md rounded-3xl p-8 sm:p-12 border border-amber-200/60 shadow-xl space-y-6">
-          <div className="inline-flex p-3 rounded-full bg-amber-100 text-amber-700">
-            <Sparkles className="w-8 h-8" />
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-800 leading-tight">
-            Many, Many Congratulations on Your 25th Birthday! 🥳💐
-          </h2>
-
-          <p className="text-slate-700 text-base sm:text-lg leading-relaxed font-light max-w-2xl mx-auto">
-            Congratulations on reaching this beautiful milestone! May 25 open the doors to extraordinary opportunities, amazing experiences, personal growth, and achievements that make you proud of yourself.
-          </p>
-
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl mx-auto italic">
-            "Here's to a new year of becoming stronger, happier, wiser, and more confident. Celebrate yourself today, because you deserve every bit of happiness coming your way!"
-          </p>
-        </div>
-      </section>
-
-      {/* ================= THE GRAND FINALE ================= */}
-      <section className="py-24 px-4 text-center relative z-10 bg-gradient-to-b from-transparent via-rose-100/40 to-rose-200/50">
-        <div className="max-w-3xl mx-auto space-y-8">
-          
-          <div className="space-y-4">
-            <h2 className="text-4xl sm:text-6xl font-serif font-bold text-rose-600 drop-shadow-sm">
-              Happy 25th Birthday, <br />
-              <span className="font-script font-normal italic text-slate-800">My Beautiful Sister! ❤️🎂</span>
-            </h2>
-
-            <p className="text-slate-700 text-lg sm:text-xl font-light leading-relaxed max-w-xl mx-auto">
-              May your life always be filled with love, laughter, peace, prosperity, and countless beautiful surprises.
-            </p>
-
-            <p className="text-rose-700 font-medium text-base">
-              25 looks beautiful on you, and I hope this year gives you a thousand reasons to smile.
-            </p>
-          </div>
-
-          <div className="pt-4">
-            <button
-              onClick={() => {
-                setFireworksActive(true);
-                triggerConfettiPop();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => setFireworksActive(false), 7000);
-              }}
-              className="px-8 py-4 rounded-full bg-gradient-to-r from-amber-400 via-rose-500 to-purple-600 text-white font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
-            >
-              <RotateCcw className="w-5 h-5" /> Celebrate Again! 🎉
-            </button>
-          </div>
-
-          <div className="pt-12 text-slate-500 text-sm font-sans flex items-center justify-center gap-2 border-t border-rose-200/60 max-w-md mx-auto">
-            <span>Made with endless love, just for you.</span>
-            <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-          </div>
-
-        </div>
-      </section>
-
-      {/* ================= CUSTOMIZER DRAWER ================= */}
-      {customizerOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-md bg-white h-full p-6 space-y-6 overflow-y-auto shadow-2xl relative animate-slide-left">
-            
-            <div className="flex justify-between items-center border-b pb-4">
-              <h3 className="font-serif font-bold text-xl text-slate-800 flex items-center gap-2">
-                <Settings className="w-5 h-5 text-rose-500" /> Personalize Birthday Gift
-              </h3>
-              <button
-                onClick={() => setCustomizerOpen(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-500"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Sister's Name / Nickname</label>
-                <input
-                  type="text"
-                  value={sisterName}
-                  onChange={(e) => setSisterName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Your Name / Signature</label>
-                <input
-                  type="text"
-                  value={brotherName}
-                  onChange={(e) => setBrotherName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm"
-                />
-              </div>
-
-              <div className="pt-4 border-t">
-                <button
-                  onClick={() => setCustomizerOpen(false)}
-                  className="w-full py-3 rounded-xl bg-rose-500 text-white font-semibold text-sm shadow hover:bg-rose-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <Check className="w-4 h-4" /> Save Changes
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
-}
+    // Initialize Page Content
+    window.onload = function() {
+      lucide.createIcons();
+      renderGallery();
+    };
+  </script>
+</body>
+</html>
